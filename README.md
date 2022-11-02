@@ -37,4 +37,4 @@ Using Marketstack.com API, built a Flutter app that displays stock market report
 
 ## Screenshots
 
-<img src="https://github.com/boffincoders/flutter_scale_ruler/blob/master/gv.gif?raw=true" height="300em" />
+<img src="https://github.com/Gursewak-Uppal/stock_tracker/blob/main/screenshots/stock_tracker_home.jpg?raw=true" height="400em" />
