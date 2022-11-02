@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_tracker/cubit/stock_data_cubit.dart';
-import 'package:stock_tracker/repository/get_stock_data_repository.dart';
+import 'package:stock_tracker/repository/stock_data_repository.dart';
 import 'package:stock_tracker/screen/stock_tracker_screen.dart';
 import 'package:stock_tracker/utils/app_utlis.dart';
 

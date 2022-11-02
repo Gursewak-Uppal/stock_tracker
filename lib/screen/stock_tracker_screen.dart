@@ -20,9 +20,9 @@ class StockTrackerScreen extends StatefulWidget {
 
 class _StockTrackerScreenState extends State<StockTrackerScreen> {
   final searchController = TextEditingController();
-  List<StockList> stockListData = [];
-  List<StockList> duplicateStockListData = [];
-  List<StockList> searchList = [];
+  List<StockData> stockListData = [];
+  List<StockData> duplicateStockListData = [];
+  List<StockData> searchList = [];
   List<DateTime?> dateRangeList = [];
   String errorMessage = '';
   bool enableSearchField = false;
@@ -68,7 +68,7 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
     return BlocConsumer<StockDataCubit, StockDataState>(listener: (context, state) {
       if (state is GetStockDataSuccessfully) {
         for (int i = 0; i < 10; i++) {
-          StockList stockList = StockList.fromJson(state.stockList[i]);
+          StockData stockList = StockData.fromJson(state.stockList[i]);
           stockListData.add(stockList);
         }
         duplicateStockListData = stockListData;
@@ -129,18 +129,23 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
                     child: Text(errorMessage),
                   ),
                 )
-              : searchController.text.isNotEmpty && searchList.isEmpty
+              : searchController.text.isNotEmpty && context.read<StockDataCubit>().searchList.isEmpty
                   ? const Center(
                       child: Text("No result found..."),
                     )
                   : stockListData.isNotEmpty
-                      ? ListView.builder(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          itemCount: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList.length : stockListData.length,
-                          itemBuilder: (context, index) {
-                            return _buildStockWidget(index);
-                          })
+                      ? RefreshIndicator(
+                          onRefresh: () async {
+                            await _refreshStockData();
+                          },
+                          child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemCount: searchController.text.isNotEmpty || context.read<StockDataCubit>().searchList.isNotEmpty ? context.read<StockDataCubit>().searchList.length : stockListData.length,
+                              itemBuilder: (context, index) {
+                                return _buildStockWidget(index);
+                              }),
+                        )
                       : const Center(
                           child: Text("No data found"),
                         ),
@@ -222,12 +227,12 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].symbol! : stockListData[index].symbol!),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || context.read<StockDataCubit>().searchList.isNotEmpty ? context.read<StockDataCubit>().searchList[index].symbol! : stockListData[index].symbol!),
             AppUtils.sizedBox(height: 5.0),
-            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].exchange! : stockListData[index].exchange!),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || context.read<StockDataCubit>().searchList.isNotEmpty ? context.read<StockDataCubit>().searchList[index].exchange! : stockListData[index].exchange!),
             AppUtils.sizedBox(height: 5.0),
             AppUtils.appTextWidget(
-                text: searchController.text.isNotEmpty || searchList.isNotEmpty ? _convertIntoDateFormat(searchList[index].date!) : _convertIntoDateFormat(stockListData[index].date!)),
+                text: searchController.text.isNotEmpty ||context.read<StockDataCubit>().searchList.isNotEmpty ? _convertIntoDateFormat(context.read<StockDataCubit>().searchList[index].date!) : _convertIntoDateFormat(stockListData[index].date!)),
           ],
         ))
       ],
@@ -256,11 +261,11 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].open!.toString() : stockListData[index].open!.toString()),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || context.read<StockDataCubit>().searchList.isNotEmpty ? context.read<StockDataCubit>().searchList[index].open!.toString() : stockListData[index].open!.toString()),
             AppUtils.sizedBox(height: 5.0),
-            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].close!.toString() : stockListData[index].close!.toString()),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || context.read<StockDataCubit>().searchList.isNotEmpty ? context.read<StockDataCubit>().searchList[index].close!.toString() : stockListData[index].close!.toString()),
             AppUtils.sizedBox(height: 5.0),
-            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].volume!.toString() : stockListData[index].volume.toString()),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || context.read<StockDataCubit>().searchList.isNotEmpty ? context.read<StockDataCubit>().searchList[index].volume!.toString() : stockListData[index].volume.toString()),
           ],
         ))
       ],
@@ -270,7 +275,7 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
   void _onSearchTextChanged(String text) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      searchList.clear();
+      context.read<StockDataCubit>().searchList.clear();
       if (text.isEmpty) {
         setState(() {
           return;
@@ -283,11 +288,11 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
             element.open!.toString().toLowerCase().contains(text.toLowerCase()) ||
             element.close!.toString().toLowerCase().contains(text.toLowerCase()) ||
             element.volume!.toString().toLowerCase().contains(text.toLowerCase())) {
-          searchList.add(element);
+          context.read<StockDataCubit>().searchList.add(element);
         }
       }
+      context.read<StockDataCubit>().searchList.length;
 
-      setState(() {});
     });
   }
 
@@ -343,5 +348,10 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
         setState(() {});
       }
     }
+  }
+
+  /// Method to Refresh Stock Data
+  _refreshStockData() {
+    context.read<StockDataCubit>().getStockData();
   }
 }

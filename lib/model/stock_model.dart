@@ -15,11 +15,11 @@ class StockDataModel {
   });
 
   Pagination? pagination;
-  List<StockList>? data;
+  List<StockData>? data;
 
   factory StockDataModel.fromJson(Map<String, dynamic> json) => StockDataModel(
         pagination: Pagination.fromJson(json["pagination"]),
-        data: List<StockList>.from(json["data"].map((x) => StockList.fromJson(x))),
+        data: List<StockData>.from(json["data"].map((x) => StockData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -28,8 +28,8 @@ class StockDataModel {
       };
 }
 
-class StockList {
-  StockList({
+class StockData {
+  StockData({
     this.open,
     this.close,
     this.volume,
@@ -45,7 +45,7 @@ class StockList {
   String? exchange;
   DateTime? date;
 
-  factory StockList.fromJson(Map<String, dynamic> json) => StockList(
+  factory StockData.fromJson(Map<String, dynamic> json) => StockData(
         open: json["open"].toDouble(),
         close: json["close"].toDouble(),
         volume: json["volume"],

@@ -34,24 +34,5 @@ class StockRepository {
     }
     return completer.future;
   }
-  Future<dynamic> getLocalStockData() async {
-    Completer<dynamic> completer = Completer<dynamic>();
 
-    try {
-      var data = await rootBundle.loadString("assets/local_json.json");
-
-      if (data.isNotEmpty) {
-        completer.complete(jsonDecode(data));
-      }
-      else{
-        const errorMessage = "Data is not loaded";
-        completer.complete(errorMessage);
-
-      }
-
-    } catch (e) {
-      print(e.toString());
-    }
-    return completer.future;
-  }
 }

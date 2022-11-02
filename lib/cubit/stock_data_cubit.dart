@@ -1,15 +1,17 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stock_tracker/repository/get_stock_data_repository.dart';
+import 'package:stock_tracker/model/stock_model.dart';
+import 'package:stock_tracker/repository/stock_data_repository.dart';
 
 part 'stock_data_state.dart';
 
 ///Cubit class to managing the response with states
 class StockDataCubit extends Cubit<StockDataState> {
+  List<StockData> searchList=[];
   StockDataCubit({required this.repository}) : super(InitialLoading()) {
-   // getStockData();
-    getLocalStockData();
+  getStockData();
+
   }
 
   final StockRepository repository;
@@ -30,17 +32,4 @@ class StockDataCubit extends Cubit<StockDataState> {
     }
   }
 
-  void getLocalStockData() async {
-    emit(Loading());
-    try {
-      var res = await repository.getLocalStockData();
-      if (res["data"] != null) {
-        emit(GetStockDataSuccessfully(stockList: res["data"]));
-      } else {
-        emit(GetStockDataFailed(error: res));
-      }
-    } catch (e) {
-      emit(GetStockDataFailed(error: e));
-    }
-  }
 }

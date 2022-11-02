@@ -5,16 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8036245-efc3-4bfb-94be-283ae70694e5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Flutter/Debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/Debug.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Flutter/Release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/Release.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/cubit/stock_data_cubit.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/cubit/stock_data_cubit.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/cubit/stock_data_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/cubit/stock_data_state.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/model/stock_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/stock_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/repository/get_stock_data_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/repository/stock_data_repository.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screen/stock_tracker_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screen/stock_tracker_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/utils/app_color.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/utils/app_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils/app_utlis.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stock_tracker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/stock_tracker.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +55,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/screenshots" />
       <recent name="$PROJECT_DIR$/assets" />
     </key>
   </component>
@@ -94,28 +93,43 @@
       <breakpoints>
         <line-breakpoint suspend="THREAD" type="Dart">
           <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
-          <line>14</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
-          <line>19</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
-          <line>25</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
-          <line>39</line>
+          <line>22</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint suspend="THREAD" type="Dart">
           <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
-          <line>38</line>
+          <line>21</line>
           <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/cubit/stock_data_cubit.dart</url>
+          <line>30</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/cubit/stock_data_cubit.dart</url>
+          <line>25</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/cubit/stock_data_cubit.dart</url>
+          <line>24</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
+          <line>15</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
+          <line>11</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/server_service/http_exception_handler.dart</url>
+          <line>12</line>
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
