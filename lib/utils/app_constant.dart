@@ -3,8 +3,6 @@ class AppConstant {
 
   /// App String
   static String someProblemErrMsg = "Some problem occurred";
-  static String tooManyAttempts = "Your monthly usage limit has been reached. Please upgrade your Subscription Plan.";
-  static String unauthorized = "You have not supplied a valid API Access Key.";
 
   //marketstack
   static String accessKey = "API_access_key"; // Replace with your access key
