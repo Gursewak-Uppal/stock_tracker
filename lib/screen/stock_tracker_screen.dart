@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:stock_tracker/cubit/stock_data_cubit.dart';
 import 'package:stock_tracker/internet_connectivity/internet_connectivity.dart';
 import 'package:stock_tracker/internet_connectivity/no_internet_connection.dart';
-import 'package:stock_tracker/model/stock_model.dart';
+import 'package:stock_tracker/model/stock_data_model/stock_model.dart';
 import 'package:stock_tracker/utils/app_utlis.dart';
 
 class StockTrackerScreen extends StatefulWidget {

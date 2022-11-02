@@ -10,14 +10,13 @@ class HttpExceptions implements Exception {
 
   String message = "";
 
-  HttpExceptions.fromHttpErr(Response response) {
-    var res = jsonDecode(response.body);
+  HttpExceptions.fromHttpErr( response) {
     switch (response.statusCode) {
       case 401:
-        message =  res["error"]["message"];
+        message =  response.message;
         break;
       case 429:
-        message = res["error"]["message"];
+        message = response.message;
         break;
       case 500:
         message = AppConstant.someProblemErrMsg;

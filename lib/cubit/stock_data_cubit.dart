@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stock_tracker/model/stock_model.dart';
+import 'package:stock_tracker/model/stock_data_model/stock_model.dart';
 import 'package:stock_tracker/repository/stock_data_repository.dart';
 
 part 'stock_data_state.dart';
