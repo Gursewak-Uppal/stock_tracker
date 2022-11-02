@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_tracker/model/error_response_model/error_response_model.dart';
 import 'package:stock_tracker/server_service/http_exception_handler.dart';
