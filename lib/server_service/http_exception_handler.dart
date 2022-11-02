@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:http/http.dart';
 import 'package:stock_tracker/utils/app_constant.dart';
 
 class HttpExceptions implements Exception {
@@ -7,13 +10,14 @@ class HttpExceptions implements Exception {
 
   String message = "";
 
-  HttpExceptions.fromHttpErr(response) {
+  HttpExceptions.fromHttpErr(Response response) {
+    var res = jsonDecode(response.body);
     switch (response.statusCode) {
       case 401:
-        message = AppConstant.unauthorized;
+        message =  res["error"]["message"];
         break;
       case 429:
-        message = AppConstant.tooManyAttempts;
+        message = res["error"]["message"];
         break;
       case 500:
         message = AppConstant.someProblemErrMsg;

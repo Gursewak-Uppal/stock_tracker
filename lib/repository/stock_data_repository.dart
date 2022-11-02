@@ -8,7 +8,6 @@ import 'package:stock_tracker/utils/app_constant.dart';
 
 /// Repository class
 class StockRepository {
-
   ///Method to get the Stock Data from the Server
   Future<dynamic> getStockData() async {
     Completer<dynamic> completer = Completer<dynamic>();
@@ -16,17 +15,14 @@ class StockRepository {
     try {
       String url = "${AppConstant.endPoint}?access_key=${AppConstant.accessKey}&symbols=${AppConstant.symbol}";
 
-      var response = await http.get(Uri.parse(url));
+      http.Response response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         completer.complete(jsonDecode(response.body));
-      }
-      else{
+      } else {
         final errorMessage = HttpExceptions.fromHttpErr(response);
         completer.complete(errorMessage);
-
       }
-
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -34,5 +30,4 @@ class StockRepository {
     }
     return completer.future;
   }
-
 }

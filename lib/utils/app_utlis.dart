@@ -18,7 +18,7 @@ class AppUtils {
           bool isPrefix = false,
           Widget? prefixIcon,
           var onTap,
-          var onChangedFunction}) =>
+          var onChangedFunction, bool isEnabled=true}) =>
       Container(
         padding: EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(borderRadius)),
@@ -33,6 +33,7 @@ class AppUtils {
             Expanded(
                 child: TextFormField(
               onTap: onTap,
+              enabled: isEnabled,
               textInputAction: TextInputAction.done,
               controller: controller,
               decoration: InputDecoration.collapsed(
