@@ -1,5 +1,8 @@
+// ignore_for_file: must_be_immutable
+
 part of 'stock_data_cubit.dart';
 
+/// Class of Cubit state
 class StockDataState extends Equatable {
   @override
   // TODO: implement props
@@ -19,7 +22,7 @@ dynamic stockList;
 }
 
 class GetStockDataFailed extends StockDataState {
-  var error;
+  dynamic error;
 
   GetStockDataFailed({this.error});
   @override

@@ -20,6 +20,7 @@ class AppUtils{
         String hintText = "search",
         bool isPrefix = false,
         Widget? prefixIcon,
+        var onTap,
         var onChangedFunction}) =>
       Container(
         padding: EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
@@ -34,6 +35,7 @@ class AppUtils{
             ),
             Expanded(
                 child: TextFormField(
+                  onTap: onTap,
                   textInputAction: TextInputAction.done,
                   controller: controller,
                   decoration: InputDecoration.collapsed(

@@ -1,5 +1,3 @@
-
-
 import 'package:stock_tracker/utils/app_constant.dart';
 
 class HttpExceptions implements Exception {
@@ -9,28 +7,13 @@ class HttpExceptions implements Exception {
 
   String message = "";
 
-  HttpExceptions.fromHttpErr( response) {
+  HttpExceptions.fromHttpErr(response) {
     switch (response.statusCode) {
-      case 400:
-        message = response.message;
-        break;
       case 401:
-        message = response.message;
-        break;
-      case 403:
-        message = response.message;
-        break;
-      case 404:
-        message = response.message;
-        break;
-      case 409:
-        message = response.message;
-        break;
-      case 422:
-        message = response.message;
+        message = AppConstant.unauthorized;
         break;
       case 429:
-        message = response.message;
+        message = AppConstant.tooManyAttempts;
         break;
       case 500:
         message = AppConstant.someProblemErrMsg;
@@ -56,11 +39,9 @@ class CommonResponseModel {
   final String message;
   dynamic data;
 
-  factory CommonResponseModel.fromJson(Map<String, dynamic> json) =>
-      CommonResponseModel(
+  factory CommonResponseModel.fromJson(Map<String, dynamic> json) => CommonResponseModel(
         statusCode: json["status"],
         message: json["message"],
         data: json["data"],
       );
 }
-

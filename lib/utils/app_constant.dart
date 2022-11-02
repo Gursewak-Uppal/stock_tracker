@@ -3,9 +3,11 @@ class AppConstant{
 
   /// App String
   static String someProblemErrMsg="Some problem occurred";
+  static String tooManyAttempts="Your monthly usage limit has been reached. Please upgrade your Subscription Plan.";
+  static String unauthorized="You have not supplied a valid API Access Key.";
 
   //marketstack
-  static String accessKey = "8a4261833e6e549fa25c037e8caf4f01";
+  static String accessKey = "API_access_key";//
 
   /// Api write
   static String endPoint="http://api.marketstack.com/v1/eod";

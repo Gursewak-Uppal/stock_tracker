@@ -1,4 +1,5 @@
-import 'package:auto_size_text/auto_size_text.dart';
+import 'dart:async';
+
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +21,12 @@ class StockTrackerScreen extends StatefulWidget {
 class _StockTrackerScreenState extends State<StockTrackerScreen> {
   final searchController = TextEditingController();
   List<StockList> stockListData = [];
+  List<StockList> duplicateStockListData = [];
   List<StockList> searchList = [];
-  List<DateTime> dateRangeList = [];
+  List<DateTime?> dateRangeList = [];
+  String errorMessage = '';
+  bool enableSearchField = false;
+  Timer? _debounce;
 
   late Map _source = {ConnectivityResult.mobile: true};
   final MyConnectivity _connectivity = MyConnectivity.instance;
@@ -43,10 +48,18 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
   Widget build(BuildContext context) {
     bool connectionStatus = AppUtils.getInternetConnection(_source);
     if (!connectionStatus) {
-      return NoInternet();
+      return const NoInternet();
     } else {
       return Scaffold(
-        body: _stockTrackerBody(),
+        body: Listener(
+          onPointerDown: (_) {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.focusedChild?.unfocus();
+            }
+          },
+          child: _stockTrackerBody(),
+        ),
       );
     }
   }
@@ -58,6 +71,10 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
           StockList stockList = StockList.fromJson(state.stockList[i]);
           stockListData.add(stockList);
         }
+        duplicateStockListData = stockListData;
+      }
+      if (state is GetStockDataFailed) {
+        errorMessage = state.error;
       }
     }, builder: (context, state) {
       return Column(
@@ -92,34 +109,41 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
   }
 
   _searchBar() {
-    return Expanded(child: AppUtils.searchBox(controller: searchController, onChangedFunction: _onSearchTextChanged));
+    return Expanded(
+        child: AppUtils.searchBox(
+      controller: searchController,
+      onChangedFunction: _onSearchTextChanged,
+    ));
   }
 
   _stockTrackerList(StockDataState state) {
     return Expanded(
       child: state is Loading
           ? const Center(
-        child: CircularProgressIndicator(),
-      )
-          : GetStockDataFailed is GetStockDataFailed
-          ? const Center(
-        child: Text("Limit exceed"),
-      )
-          : searchController.text.isNotEmpty && searchList.isEmpty
-          ? const Center(
-        child: Text("No result found..."),
-      )
-          : stockListData.isNotEmpty
-          ? ListView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          itemCount: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList.length : stockListData.length,
-          itemBuilder: (context, index) {
-            return _buildStockWidget(index);
-          })
-          : const Center(
-        child: Text("No List Found"),
-      ),
+              child: CircularProgressIndicator(),
+            )
+          : state is GetStockDataFailed
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(errorMessage),
+                  ),
+                )
+              : searchController.text.isNotEmpty && searchList.isEmpty
+                  ? const Center(
+                      child: Text("No result found..."),
+                    )
+                  : stockListData.isNotEmpty
+                      ? ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList.length : stockListData.length,
+                          itemBuilder: (context, index) {
+                            return _buildStockWidget(index);
+                          })
+                      : const Center(
+                          child: Text("No data found"),
+                        ),
     );
   }
 
@@ -156,32 +180,23 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
         ));
   }
 
+  /// Pick date range method
   void _pickDateRange() async {
     await showCalendarDatePicker2Dialog(
-        context: context,
-        config: CalendarDatePicker2WithActionButtonsConfig(
-          lastDate: DateTime.now(),
-          cancelButton: _onCancelButton(),
-          calendarType: CalendarDatePicker2Type.range,
-        ),
-        dialogSize: const Size(325, 400),
-        initialValue: [],
-        borderRadius: BorderRadius.circular(15),
+      context: context,
+      config: CalendarDatePicker2WithActionButtonsConfig(
+        lastDate: DateTime.now(),
+        cancelButton: _onCancelButton(),
+        calendarType: CalendarDatePicker2Type.range,
+      ),
+      dialogSize: const Size(325, 400),
+      initialValue: dateRangeList,
+      borderRadius: BorderRadius.circular(15),
     ).then((value) {
-    if(value!=null && value.isNotEmpty) {
-
-    firstDate = DateTime.utc(value[0]!.year, value[0]!.month, value[0]!.day);
-    lastDate = DateTime.utc(value[1]!.year, value[1]!.month, value[1]!.day);
-
-    var list = stockListData.where((element) => element.date!.difference(firstDate!).inDays >= 0 && element.date!.difference(lastDate!).inDays <= 0).toList();
-    stockListData = list;
-
-    setState(() {});
-
-    }
-    else{
-
-    }
+      if (value != null) {
+        dateRangeList = value;
+        _getDateTimeFilterStockList(dateRangeList);
+      }
     });
   }
 
@@ -204,16 +219,17 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
         ),
         Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].symbol! : stockListData[index].symbol!),
-                AppUtils.sizedBox(height: 5.0),
-                AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].exchange! : stockListData[index].exchange!),
-                AppUtils.sizedBox(height: 5.0),
-                AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? _convertIntoDateFormat(stockListData[index].date!) : _convertIntoDateFormat(stockListData[index].date!)),
-              ],
-            ))
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].symbol! : stockListData[index].symbol!),
+            AppUtils.sizedBox(height: 5.0),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].exchange! : stockListData[index].exchange!),
+            AppUtils.sizedBox(height: 5.0),
+            AppUtils.appTextWidget(
+                text: searchController.text.isNotEmpty || searchList.isNotEmpty ? _convertIntoDateFormat(searchList[index].date!) : _convertIntoDateFormat(stockListData[index].date!)),
+          ],
+        ))
       ],
     );
   }
@@ -237,39 +253,42 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
         ),
         Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].open!.toString() : stockListData[index].open!.toString()),
-                AppUtils.sizedBox(height: 5.0),
-                AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].close!.toString() : stockListData[index].close!.toString()),
-                AppUtils.sizedBox(height: 5.0),
-                AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].volume!.toString() : stockListData[index].volume.toString()),
-              ],
-            ))
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].open!.toString() : stockListData[index].open!.toString()),
+            AppUtils.sizedBox(height: 5.0),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].close!.toString() : stockListData[index].close!.toString()),
+            AppUtils.sizedBox(height: 5.0),
+            AppUtils.appTextWidget(text: searchController.text.isNotEmpty || searchList.isNotEmpty ? searchList[index].volume!.toString() : stockListData[index].volume.toString()),
+          ],
+        ))
       ],
     );
   }
 
   void _onSearchTextChanged(String text) {
-    searchList.clear();
-    if (text.isEmpty) {
-      setState(() {
-        return;
-      });
-    }
-
-    for (var element in stockListData) {
-      if (element.symbol!.toLowerCase().contains(text.toLowerCase()) ||
-          element.exchange!.toLowerCase().contains(text.toLowerCase()) ||
-          element.open!.toString().toLowerCase().contains(text.toLowerCase()) ||
-          element.close!.toString().toLowerCase().contains(text.toLowerCase()) ||
-          element.volume!.toString().toLowerCase().contains(text.toLowerCase())) {
-        searchList.add(element);
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchList.clear();
+      if (text.isEmpty) {
+        setState(() {
+          return;
+        });
       }
-    }
 
-    setState(() {});
+      for (var element in stockListData) {
+        if (element.symbol!.toLowerCase().contains(text.toLowerCase()) ||
+            element.exchange!.toLowerCase().contains(text.toLowerCase()) ||
+            element.open!.toString().toLowerCase().contains(text.toLowerCase()) ||
+            element.close!.toString().toLowerCase().contains(text.toLowerCase()) ||
+            element.volume!.toString().toLowerCase().contains(text.toLowerCase())) {
+          searchList.add(element);
+        }
+      }
+
+      setState(() {});
+    });
   }
 
   _onCancelButton() {
@@ -289,4 +308,40 @@ class _StockTrackerScreenState extends State<StockTrackerScreen> {
     return string;
   }
 
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  /// Method to get the filter Stock Data according to the Date Range
+  void _getDateTimeFilterStockList(List<DateTime?> dateRangeList) {
+    if (dateRangeList.isNotEmpty && dateRangeList.length > 1) {
+      stockListData = duplicateStockListData;
+      firstDate = DateTime.utc(dateRangeList[0]!.year, dateRangeList[0]!.month, dateRangeList[0]!.day);
+      lastDate = DateTime.utc(dateRangeList[1]!.year, dateRangeList[1]!.month, dateRangeList[1]!.day);
+
+      var list = stockListData.where((element) => element.date!.difference(firstDate!).inDays >= 0 && element.date!.difference(lastDate!).inDays <= 0).toList();
+      stockListData = list;
+
+      if (mounted) {
+        setState(() {});
+      }
+    } else if (dateRangeList.length == 1) {
+      stockListData = duplicateStockListData;
+      firstDate = DateTime.utc(dateRangeList[0]!.year, dateRangeList[0]!.month, dateRangeList[0]!.day);
+      var list = stockListData.where((element) => element.date == firstDate).toList();
+      stockListData = list;
+
+      if (mounted) {
+        setState(() {});
+      }
+    } else {
+      stockListData = duplicateStockListData;
+
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
 }
